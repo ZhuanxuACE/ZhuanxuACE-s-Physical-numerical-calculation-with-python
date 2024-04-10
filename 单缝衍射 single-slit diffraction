@@ -1,4 +1,4 @@
-#利用菲涅尔原理制作
+#利用菲涅尔-惠更斯原理制作 Produced using the Fresnel-Huygens principle
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
