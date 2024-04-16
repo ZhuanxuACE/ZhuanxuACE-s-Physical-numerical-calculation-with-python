@@ -1,0 +1,36 @@
+from matplotlib import pyplot as plt
+from matplotlib.animation import FuncAnimation, PillowWriter 
+
+fig = plt.figure(dpi=200)
+ax=fig.subplots()
+
+n = 11 #生成波的数量 Number of waves generated
+
+#生成波 generating wave
+line = []
+for i in range(n): 
+    line.append(plt.Circle((i*0.3,1),0,fill=False))
+
+for i in range(11):
+    ax.add_artist(line[i])
+
+#生成产生波的点 Generate points that generate waves
+point, = plt.plot(1,1,marker='o')
+ax.set_ylim(0,2)
+ax.set_xlim(0,4)
+ax.set_aspect(1) #固定x轴与y轴比例 Fixed x-axis to y-axis ratio
+
+def update(frame):
+    f = 70
+    point.set_xdata(frame/100)
+   
+    for i in range(n):
+        if frame>30*i:
+            line[i].set_radius((frame-30*i)/f)
+   
+ani = FuncAnimation(fig,update,frames = 300,interval=10)
+
+#打卡下面以保存gif图 Clock the code below to save the gif
+#ani.save("duopulexiaoyin.gif",writer="Pillow")
+
+plt.show()
