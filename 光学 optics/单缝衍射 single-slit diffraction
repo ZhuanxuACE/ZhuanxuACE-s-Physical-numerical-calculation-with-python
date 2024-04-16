@@ -55,5 +55,7 @@ def update(frames):
     a = pig.set_data(z)
     return a
 ani = FuncAnimation(fig,update,frames = 100,interval=40)
+
+#打开下面代码以保存gif图 Clock the code below to save the gif
 #ani.save("Single-hole diffraction.gif", writer="pillow")
 plt.show()
