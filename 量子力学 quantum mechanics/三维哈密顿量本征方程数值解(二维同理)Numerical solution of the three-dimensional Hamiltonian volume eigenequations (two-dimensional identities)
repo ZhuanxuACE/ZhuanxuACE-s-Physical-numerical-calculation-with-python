@@ -1,0 +1,56 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.sparse.linalg import eigsh
+from scipy.sparse import diags
+from scipy.sparse import kron
+
+#n越大图像越好看
+#The larger n is, the better the image looks
+n = 30
+Å = 1.8897261246257702
+L = 18*Å
+x = np.linspace(-L,L,n)
+y = np.linspace(-L,L,n)
+z = np.linspace(-L,L,n)
+x,y,z = np.meshgrid(x,y,z)
+
+#构造势能
+#constructive potential
+V = -1/(x**2 + y**2 + z**2)**0.5
+E_min = np.min(V)
+print(E_min)
+V = V.reshape(n ** 3)
+print(V.shape)
+
+#将势能矩阵变成对角矩阵 
+#Turning the potential energy matrix into a diagonal matrix
+V = diags([V], [0])
+
+#构造(d/dx)^2的矩阵
+#Construct the matrix of (d/dx)^2
+dx2 = diags([1.,-2.,1.],[-1,0,1],(n,n))*-0.5/((m_e*L/n)**2)
+I = np.identity(n)
+
+#构造哈密顿量，kron：直积 
+#constructive Hamiltonian kron：tensor product
+H = (kron(kron(dx2,I),I) + kron(kron(I,dx2),I) + kron(I,kron(I,dx2))) + V
+
+#计算前16个态
+#Calculate the first 16 states
+k = 16
+
+#开始计算本征态与本征值#
+Start calculating eigenstates and eigenvalues
+v1,v2 = eigsh(H,k=k, which='LM', sigma=min(0,E_min))
+print(v1)
+
+#提取y=0面上的概率密度并画出
+#Extract the probability density on the y = 0 surface and plot the
+for i in range(k):
+    ax = plt.subplot(4,4,i+1)
+    v3 = v2[:,i]
+    v3 = v3.reshape(n,n,n)
+    v3 = v3[n//2,:,:]**2
+    ax.imshow(v3)
+
+plt.show()
