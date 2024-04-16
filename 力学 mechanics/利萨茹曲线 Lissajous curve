@@ -1,0 +1,38 @@
+#利用参数方程表示利萨茹图
+#Representation of Lissajous curves using parametric equations
+import matplotlib.pyplot as plt
+import matplotlib.animation as ani
+import numpy as np
+
+#a:x的角速度，A:x的振幅，b:y的角速度，B:y的振幅,phi:相位差
+#a:angular velocity of x, A:amplitude of x, b:angular velocity of y, B:amplitude of y,phi:phase difference
+a = 1
+A = 1
+b = 3
+B = 1
+phi = 0
+
+t = np.linspace(0,2*np.pi,100)
+
+def X(A,a,t):
+    x = A*np.cos(a*t)
+    return x
+
+def Y(B,b,t,phi):
+    y = B*np.sin(b*t + phi)
+    return y
+
+fig = plt.figure()
+ax = fig.add_subplot()
+picture, = ax.plot(X(A,a,t),Y(B,b,t,phi))
+
+biggist_fame = 100
+def updata(update):
+    updata = update/biggist_fame
+    x = X(A,a,t)
+    y = Y(B,b,t,updata)
+    picture.set_data(x,y)
+    
+ani = ani.FuncAnimation(fig,updata,frames = 100,interval = 50)
+
+plt.show()
