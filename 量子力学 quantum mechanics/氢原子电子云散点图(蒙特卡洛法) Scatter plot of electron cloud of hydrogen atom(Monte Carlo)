@@ -1,0 +1,94 @@
+#以4d轨道为例 Take the 4d track for example
+import qutip as qt
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+import scipy.special as sp
+
+#创建随机点的个数 Number of random points created
+n = 20000
+
+#设置随机点x,y,z坐标 Set the x,y,z coordinates of the random point
+rx = np.random.random(n)
+rx = 100*(rx-0.5)
+ry = np.random.random(n)
+ry = 100*(ry-0.5)
+rz = np.random.random(n)
+rz = 100*(rz-0.5)
+t = np.random.random(n)
+
+#定义氢原子径向波函数 Defining the radial wave function of the hydrogen atom
+def R(n,l,r):
+    R = np.array([[np.exp(-r),0,0,0],
+         [(2-r)*np.exp(-r/2),r*np.exp(-r/2),0,0],
+         [(27-18*r+2*r*r)*np.exp(-r/3),(6*r-r**2)*np.exp(-r/3),(r**2)*np.exp(-r/3),0],
+         [(192-144*r+24*r**2-r**3)*np.exp(-r/4),(80*r-20*r**2+r**3)*np.exp(-r/4),(12*r**2-r**3)*np.exp(-r/4),r**3*np.exp(-r/4)]])
+    return R[n-1,l]
+
+
+position_x = np.array([])
+position_y = np.array([])
+position_z = np.array([])
+position_t = np.array([])
+# theta = np.arccos(Z/((X**2+y**2+Z**2)**0.5))
+# phi = np.arctan(y/X)
+# r = (X**2+y**2+Z**2)**0.5
+
+#创建球谐函数 Creating spherical harmonic functions
+def Y(l,m,phi,theta):
+    return sp.sph_harm(m,l,phi,theta)
+
+#创建波函数并取实部 Create a wave function and take the real part
+def f(n,l,m,r,phi,theta):
+    x = np.conj(R(n,l,r)*Y(l,m,phi,theta))*(R(n,l,r)*Y(l,m,phi,theta))
+    rang = x.max()-x.min()
+    #x = (x - x.min())/rang
+    #return x.real
+    return x.real
+
+ruslt = np.array([])
+
+#坐标变换至球坐标系并带入波函数中再储存至ruslt中
+#Coordinates are transformed to a spherical coordinate system and 
+#brought into the wave function before being stored in ruslt
+for i in range(n):
+    r = (rx[i]**2+ry[i]**2+rz[i]**2)**0.5
+    theta = np.arccos(rz[i]/((rx[i]**2+ry[i]**2+rz[i]**2)**0.5))
+    phi = np.arctan(ry[i]**2/rx[i]**2)
+    ruslt = np.append(ruslt,f(4,2,0,r,phi,theta))
+
+#归一化 normalize
+ruslt = ruslt-ruslt.min()/(ruslt.max() - ruslt.min())
+length_ruslt = np.size(ruslt)
+
+#将符合概率密度函数的随机点保存 Save the random points that match the probability density function
+for i in range(length_ruslt):
+    if ruslt[i] > t[i]:
+         position_x = np.append(position_x,rx[i])
+         position_y = np.append(position_y,ry[i])
+         position_z = np.append(position_z,rz[i])
+         position_t = np.append(position_t,t[i])
+print(np.size(position_x))
+
+#创建3d图 Creating 3d drawings
+fig = plt.figure()
+#ax = fig.add_subplot(projection = '3d')
+ax = fig.add_subplot(111, projection='3d')
+
+#画散点图 scatterplot
+picture = ax.scatter(position_x,position_y,position_z,s = 1.8, c=position_t,cmap='seismic')
+
+# 坐标轴颜色 Axes color 
+ax.set(facecolor='black',alpha = 1)
+# 图像背景颜色 Figure color 
+fig.set(facecolor='black')
+bar = plt.colorbar(picture, ax=ax)
+bar.set_label('Z Value')
+
+#使图像旋转  Rotate the image
+def update(angle):
+    ax.view_init(elev = 6,azim=angle)
+    
+ani = FuncAnimation(fig, update, frames=np.linspace(0,360,100), interval=50)
+
+plt.show()
