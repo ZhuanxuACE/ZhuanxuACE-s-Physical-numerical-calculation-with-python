@@ -1,0 +1,76 @@
+import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib.animation import FuncAnimation
+'''
+设空气阻力F = 0.002v^2 v是速度
+计算微分方程组：
+v' = 10 - v^2
+x' = v
+
+f: y(x[n+1]) =y(x[n]) + h*f{x[n],y(x[n])}
+    or dy/dx = f(x,y)
+x: x[n]
+y: y(x[n])
+h: step is h = x[n+1]-x[n]
+
+k1 = h*f(x,y)
+k2 = h*f(x+0.5*h,y+0.5*h*k1)
+k3 = h*f(x+0.5*h,y+0.5*h*k2)
+k4 = h*f(x+h, y+h*k3)
+y_n = (1/6.0)*(k1 + 2*k2 + 2*k3 + k4)*h + y
+'''
+
+def x_func(t,x,v):
+    return v
+
+def v_func(t,x,v):
+    return -(10 - 0.002*v**2)
+
+t_min = 0
+t_max = 1.4
+h = 0.01
+n = int((t_max-t_min)/h)
+t = np.linspace(t_min, t_max, n)
+
+x = np.zeros(n)
+v = np.zeros(n)
+
+x[0] = 10
+v[0] = 0
+
+for i in range(n-1):
+    kx1 = x_func(t[i],x[i],v[i])
+    kv1 = v_func(t[i],x[i],v[i])
+
+    kx2 = x_func(t[i]+0.5*h,x[i]+0.5*h*kx1,v[i]+0.5*h*kv1)
+    kv2 = v_func(t[i]+0.5*h,x[i]+0.5*h*kx1,v[i]+0.5*h*kv1)
+    
+    kx3 = x_func(t[i]+0.5*h,x[i]+0.5*h*kx2,v[i]+0.5*h*kv2)
+    kv3 = v_func(t[i]+0.5*h,x[i]+0.5*h*kx2,v[i]+0.5*h*kv2)
+    
+    kx4 = x_func(t[i]+h,x[i]+h*kx3,v[i]+h*kv3)
+    kv4 = v_func(t[i]+h,x[i]+h*kx3,v[i]+h*kv3)
+    
+    x[i+1] = x[i] + h*(kx1 + 2*kx2 + 2*kx3 + kx4)/6
+    v[i+1] = v[i] + h*(kv1 + 2*kv2 + 2*kv3 + kv4)/6
+
+print(x)
+
+fig = plt.figure()
+ax1 = fig.add_subplot(121)
+ax1.plot(t,x)
+ax1.set_title("h-t curve")
+ax1.set_xlabel("t")
+ax1.set_xlabel("h")
+
+ax2 = fig.add_subplot(122)
+point = ax2.scatter(x[0],0)
+ax2.set_title("animated demo")
+ax2.set_xlim([-1,1])
+ax2.set_ylim([0,10])
+def updata(updata):
+    point.set_offsets([0,x[updata]])
+
+ani = FuncAnimation(fig,updata,frames = n,interval = 4)
+
+plt.show()
