@@ -37,15 +37,7 @@ def updata(frame):
 
 ani = FuncAnimation(fig,func=updata,frames=300,interval = 50)
 
-#x = np.array([[0,1],[0,1]])
-#y = np.array([[0,0],[1,1]])
-#u = np.array([[1,2],[5,7]])
-#v = np.array([[1,2],[5,7]])
-#v[v > 3] = 3
-#u[u > 3] = 3
-#ax.quiver(x,y,u,v)
-
-plt.show()
-
 #打开下面用于保存gif图 Open the following for saving gifs
 #ani.save("电场图.gif")
+
+plt.show()
