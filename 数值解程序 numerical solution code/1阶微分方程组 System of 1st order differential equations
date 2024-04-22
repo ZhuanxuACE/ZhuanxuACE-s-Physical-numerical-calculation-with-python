@@ -1,0 +1,70 @@
+import numpy as np
+from matplotlib import pyplot as plt
+'''
+计算微分方程组：
+x'=y+3z+sin(5t)
+y'=x+cos(t)
+z'=x+z−3cos(3t)sin(4t)
+
+f: y(x[n+1]) =y(x[n]) + h*f{x[n],y(x[n])}
+    or dy/dx = f(x,y)
+x: x[n]
+y: y(x[n])
+h: step is h = x[n+1]-x[n]
+
+k1 = h*f(x,y)
+k2 = h*f(x+0.5*h,y+0.5*h*k1)
+k3 = h*f(x+0.5*h,y+0.5*h*k2)
+k4 = h*f(x+h, y+h*k3)
+y_n = (1/6.0)*(k1 + 2*k2 + 2*k3 + k4)*h + y
+'''
+
+def x_func(t,x,y,z):
+    return y+3*z+np.sin(5*t)
+
+def y_func(t,x,y,z):
+    return x + np.cos(t)
+
+def z_func(t,x,y,z):
+    return x+z - 3*np.cos(3*t)*np.sin(4*t)
+
+t_min = 0
+t_max = 1
+h = 0.0001
+n = int((t_max-t_min)/h)
+t = np.linspace(t_min, t_max, n)
+
+x = np.zeros(n)
+y = np.zeros(n)
+z = np.zeros(n)
+
+x[0] = 1
+y[0] = 1
+z[0] = 1
+
+for i in range(n-1):
+    kx1 = x_func(t[i],x[i],y[i],z[i])
+    ky1 = y_func(t[i],x[i],y[i],z[i])
+    kz1 = z_func(t[i],x[i],y[i],z[i])
+    
+    kx2 = x_func(t[i]+0.5*h,x[i]+0.5*h*kx1,y[i]+0.5*h*ky1,z[i]+0.5*h*kz1)
+    ky2 = y_func(t[i]+0.5*h,x[i]+0.5*h*kx1,y[i]+0.5*h*ky1,z[i]+0.5*h*kz1)
+    kz2 = z_func(t[i]+0.5*h,x[i]+0.5*h*kx1,y[i]+0.5*h*ky1,z[i]+0.5*h*kz1)
+    
+    kx3 = x_func(t[i]+0.5*h,x[i]+0.5*h*kx2,y[i]+0.5*h*ky2,z[i]+0.5*h*kz2)
+    ky3 = y_func(t[i]+0.5*h,x[i]+0.5*h*kx2,y[i]+0.5*h*ky2,z[i]+0.5*h*kz2)
+    kz3 = z_func(t[i]+0.5*h,x[i]+0.5*h*kx2,y[i]+0.5*h*ky2,z[i]+0.5*h*kz2)
+    
+    kx4 = x_func(t[i]+h,x[i]+h*kx3,y[i]+h*ky3,z[i]+h*kz3)
+    ky4 = y_func(t[i]+h,x[i]+h*kx3,y[i]+h*ky3,z[i]+h*kz3)
+    kz4 = z_func(t[i]+h,x[i]+h*kx3,y[i]+h*ky3,z[i]+h*kz3)
+    
+    x[i+1] = x[i] + h*(kx1 + 2*kx2 + 2*kx3 + kx4)/6
+    y[i+1] = y[i] + h*(ky1 + 2*ky2 + 2*ky3 + ky4)/6
+    z[i+1] = z[i] + h*(kz1 + 2*kz2 + 2*kz3 + kz4)/6
+
+plt.plot(t,x)
+plt.plot(t,y)
+plt.plot(t,z)
+
+plt.show()
