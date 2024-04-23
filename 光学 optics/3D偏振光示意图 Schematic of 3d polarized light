@@ -41,6 +41,7 @@ def updata(updata):
     E_plus_B  = ax.quiver(x_list,zero, zero, zero, B_phase, E_phase,arrow_length_ratio=0.1, length=1, normalize=False,color = 'r')
 
 ani = FuncAnimation(fig,updata,frames = 150,interval = 33)
+#打开下面代码以保存gif图 Clock the code below to save the gif
 #ani.save("3D偏振光示意图_Schematic_of_3d_polarized_light.gif",writer = 'pillow')
 
 plt.show()
