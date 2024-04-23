@@ -42,6 +42,8 @@ x[0] = 1
 y[0] = 1
 z[0] = 1
 
+#利用4阶龙格库塔法计算
+#using 4RK to compute
 for i in range(n-1):
     kx1 = x_func(t[i],x[i],y[i],z[i])
     ky1 = y_func(t[i],x[i],y[i],z[i])
