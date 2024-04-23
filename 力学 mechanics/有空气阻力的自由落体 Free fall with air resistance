@@ -2,7 +2,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 '''
-设空气阻力F = 0.002v^2 v是速度
 计算微分方程组：
 v' = 10 - v^2
 x' = v
@@ -20,14 +19,20 @@ k4 = h*f(x+h, y+h*k3)
 y_n = (1/6.0)*(k1 + 2*k2 + 2*k3 + k4)*h + y
 '''
 
+#定义dx/dt = v
 def x_func(t,x,v):
     return v
 
+#定义dv/dt = mg - F
 def v_func(t,x,v):
-    return -(10 - 0.002*v**2)
+    if v<0:
+        f_atmosphere = 0.002*v**2
+    else:
+        f_atmosphere = -0.002*v**2
+    return -10 + f_atmosphere
 
 t_min = 0
-t_max = 1.4
+t_max = 1.6
 h = 0.01
 n = int((t_max-t_min)/h)
 t = np.linspace(t_min, t_max, n)
@@ -35,9 +40,11 @@ t = np.linspace(t_min, t_max, n)
 x = np.zeros(n)
 v = np.zeros(n)
 
-x[0] = 10
-v[0] = 0
+x[0] = 0
+v[0] = 9
 
+#4阶龙格库塔法计算二阶微分方程
+#Computing second order ODE using 4RK
 for i in range(n-1):
     kx1 = x_func(t[i],x[i],v[i])
     kv1 = v_func(t[i],x[i],v[i])
@@ -55,22 +62,43 @@ for i in range(n-1):
     v[i+1] = v[i] + h*(kv1 + 2*kv2 + 2*kv3 + kv4)/6
 
 print(x)
+print(v)
 
-fig = plt.figure()
-ax1 = fig.add_subplot(121)
+#位置与时间曲线
+#Position-time curve
+fig = plt.figure(dpi = 120,figsize=(10,4))
+ax1 = fig.add_subplot(131)
 ax1.plot(t,x)
+point_ax1 = ax1.scatter(1,1)
+ax1.set_ylim([0,5])
 ax1.set_title("h-t curve")
 ax1.set_xlabel("t")
-ax1.set_xlabel("h")
+ax1.set_ylabel("h")
 
-ax2 = fig.add_subplot(122)
-point = ax2.scatter(x[0],0)
+#动画演示
+#animated demo
+ax2 = fig.add_subplot(132)
+point_ax2 = ax2.scatter(x[0],0)
 ax2.set_title("animated demo")
 ax2.set_xlim([-1,1])
-ax2.set_ylim([0,10])
-def updata(updata):
-    point.set_offsets([0,x[updata]])
+ax2.set_ylim([0,5])
 
-ani = FuncAnimation(fig,updata,frames = n,interval = 4)
+#速度-时间曲线
+#Velocity-time curve
+ax3 = fig.add_subplot(133)
+ax3.plot(t,v)
+point_ax3 = ax3.scatter(1,1)
+ax3.set_title("v-t curve")
+ax3.set_xlabel("t")
+ax3.set_ylabel("v")
+
+def updata(updata):
+    point_ax1.set_offsets([t[updata],x[updata]])
+    point_ax2.set_offsets([0,x[updata]])
+    point_ax3.set_offsets([t[updata],v[updata]])
+
+ani = FuncAnimation(fig,updata,frames = n,interval = 33)
+#打开下面代码保存gif图 Open the following code to save the gif
+#ani.save("Free_fall_with_air_resistance.gif",writer = 'pillow')
 
 plt.show()
