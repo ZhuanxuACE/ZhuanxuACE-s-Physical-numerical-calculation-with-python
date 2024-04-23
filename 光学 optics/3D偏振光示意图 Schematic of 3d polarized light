@@ -1,0 +1,46 @@
+from matplotlib.animation import FuncAnimation
+import matplotlib.pyplot as plt
+import numpy as np
+'''
+通过设置不同的phase来形成不同偏正的光
+Formation of light with different polarization by setting different “phases”
+'''
+
+n = 40#箭头个数 Number of arrows
+x_min = -4*np.pi
+x_max = 4*np.pi#范围 range
+x_list = np.linspace(x_min ,x_max,n)
+zero = np.zeros(n)
+
+E_phase = np.sin(x_list+np.pi/2)
+B_phase = np.sin(x_list)
+
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+#E = ax.quiver(x_list,zero, zero, zero, zero, E_phase, length=1, normalize=False,color = 'g')
+#B = ax.quiver(x_list,zero, zero, zero, B_phase, zero, length=1, normalize=False)
+#E_plus_B = ax.quiver(x_list,zero, zero, zero, B_phase, E_phase,arrow_length_ratio=0.1, length=1, normalize=False,color = 'r')
+
+ax.set_zlim(-1,1)
+ax.set_ylim(-1,1)
+ax.set_xlim(x_min,x_max)
+
+def updata(updata):
+    #phase变量为光偏振相位，现在以相差π/2为例子，即圆偏振光
+    #The phase variable is the phase of light polarization, now take the phase difference π/2 as an example, i.e. circularly polarized light
+    phase = np.pi/2
+    E_phase = np.sin(x_list + updata*np.pi/50 + phase)
+    B_phase = np.sin(x_list + updata*np.pi/50)
+    ax.clear()
+    ax.set_zlim(-1,1)
+    ax.set_ylim(-1,1)
+    ax.set_xlim(x_min,x_max)
+    ax.set_title("Blue:E  Green:B  Red:Light  phase:{:.2f}".format(phase))
+    E = ax.quiver(x_list,zero, zero, zero, zero, E_phase,arrow_length_ratio=0.1, length=1, normalize=False,color = 'g')
+    B = ax.quiver(x_list,zero, zero, zero, B_phase, zero,arrow_length_ratio=0.1, length=1, normalize=False)
+    E_plus_B  = ax.quiver(x_list,zero, zero, zero, B_phase, E_phase,arrow_length_ratio=0.1, length=1, normalize=False,color = 'r')
+
+ani = FuncAnimation(fig,updata,frames = 100,interval = 33)
+#ani.save("3D偏振光示意图_Schematic_of_3d_polarized_light.gif",writer = 'pillow')
+
+plt.show()
