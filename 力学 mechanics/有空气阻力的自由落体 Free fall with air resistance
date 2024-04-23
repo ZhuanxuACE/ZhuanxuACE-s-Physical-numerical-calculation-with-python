@@ -26,22 +26,22 @@ def x_func(t,x,v):
 #定义dv/dt = mg - F
 def v_func(t,x,v):
     if v<0:
-        f_atmosphere = 0.002*v**2
+        f_atmosphere = 0.5*v**2
     else:
-        f_atmosphere = -0.002*v**2
+        f_atmosphere = -0.5*v**2
     return -10 + f_atmosphere
 
 t_min = 0
-t_max = 1.6
-h = 0.01
+t_max = 2.4
+h = 0.02
 n = int((t_max-t_min)/h)
 t = np.linspace(t_min, t_max, n)
 
 x = np.zeros(n)
 v = np.zeros(n)
 
-x[0] = 0
-v[0] = 9
+x[0] = 10
+v[0] = 0
 
 #4阶龙格库塔法计算二阶微分方程
 #Computing second order ODE using 4RK
@@ -70,7 +70,7 @@ fig = plt.figure(dpi = 120,figsize=(10,4))
 ax1 = fig.add_subplot(131)
 ax1.plot(t,x)
 point_ax1 = ax1.scatter(1,1)
-ax1.set_ylim([0,5])
+ax1.set_ylim([0,11])
 ax1.set_title("h-t curve")
 ax1.set_xlabel("t")
 ax1.set_ylabel("h")
@@ -81,7 +81,7 @@ ax2 = fig.add_subplot(132)
 point_ax2 = ax2.scatter(x[0],0)
 ax2.set_title("animated demo")
 ax2.set_xlim([-1,1])
-ax2.set_ylim([0,5])
+ax2.set_ylim([0,11])
 
 #速度-时间曲线
 #Velocity-time curve
@@ -100,5 +100,7 @@ def updata(updata):
 ani = FuncAnimation(fig,updata,frames = n,interval = 33)
 #打开下面代码保存gif图 Open the following code to save the gif
 #ani.save("Free_fall_with_air_resistance.gif",writer = 'pillow')
+
+plt.show()
 
 plt.show()
