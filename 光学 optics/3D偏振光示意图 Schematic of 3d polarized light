@@ -15,7 +15,7 @@ zero = np.zeros(n)
 E_phase = np.sin(x_list+np.pi/2)
 B_phase = np.sin(x_list)
 
-fig = plt.figure()
+fig = plt.figure(figsize=(20,10),dpi = 100)
 ax = fig.add_subplot(projection='3d')
 #E = ax.quiver(x_list,zero, zero, zero, zero, E_phase, length=1, normalize=False,color = 'g')
 #B = ax.quiver(x_list,zero, zero, zero, B_phase, zero, length=1, normalize=False)
@@ -29,8 +29,8 @@ def updata(updata):
     #phase变量为光偏振相位，现在以相差π/2为例子，即圆偏振光
     #The phase variable is the phase of light polarization, now take the phase difference π/2 as an example, i.e. circularly polarized light
     phase = np.pi/2
-    E_phase = np.sin(x_list + updata*np.pi/50 + phase)
-    B_phase = np.sin(x_list + updata*np.pi/50)
+    E_phase = np.sin(x_list + updata*np.pi/75 + phase)
+    B_phase = np.sin(x_list + updata*np.pi/75)
     ax.clear()
     ax.set_zlim(-1,1)
     ax.set_ylim(-1,1)
@@ -40,7 +40,7 @@ def updata(updata):
     B = ax.quiver(x_list,zero, zero, zero, B_phase, zero,arrow_length_ratio=0.1, length=1, normalize=False)
     E_plus_B  = ax.quiver(x_list,zero, zero, zero, B_phase, E_phase,arrow_length_ratio=0.1, length=1, normalize=False,color = 'r')
 
-ani = FuncAnimation(fig,updata,frames = 100,interval = 33)
+ani = FuncAnimation(fig,updata,frames = 150,interval = 33)
 #ani.save("3D偏振光示意图_Schematic_of_3d_polarized_light.gif",writer = 'pillow')
 
 plt.show()
