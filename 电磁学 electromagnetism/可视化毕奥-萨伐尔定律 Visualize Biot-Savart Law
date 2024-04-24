@@ -67,4 +67,6 @@ ax.set_xlim([x_min,x_max])
 ax.set_ylim([x_min,x_max])
 ax.set_zlim([x_min,x_max])
 
+ax.set_title("Red line: wire, Blue vector: magnetic fields")
+
 plt.show()
