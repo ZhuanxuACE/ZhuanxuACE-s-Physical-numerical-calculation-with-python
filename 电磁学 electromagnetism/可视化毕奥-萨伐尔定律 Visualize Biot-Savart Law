@@ -1,6 +1,5 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib.animation import FuncAnimation
 '''
 数值计算毕奥-萨伐尔定律的积分形式：B = ∫dl×e_r/(r^2)
 Numerical computation of the integral form of the Biot-Savart Law：B = ∫dl×e_r/(r^2)
