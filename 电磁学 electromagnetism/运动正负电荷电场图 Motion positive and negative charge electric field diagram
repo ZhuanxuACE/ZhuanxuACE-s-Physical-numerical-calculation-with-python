@@ -3,6 +3,12 @@ import matplotlib as mpl
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation, PillowWriter 
 
+#为了使图片美观，将数字放缩的函数
+#Functions to deflate numbers for aesthetically pleasing images
+def scale(x):
+    x = x*10
+    return np.where(x>0,np.power(x,0.5),-np.power(-x,0.5))
+
 fig = plt.figure(dpi = 200)
 ax = fig.subplots()
 a = 4
@@ -14,11 +20,11 @@ xx = 1*(x-a)/(((x-a)*(x-a)+y*y)**(1.5))-(x+a)/(((x+a)*(x+a)+y*y)**(1.5))
 yy = 1*y/(((x-a)*(x-a)+y*y)**(1.5))-y/(((x+a)*(x+a)+y*y)**(1.5))
 
 r = np.power(np.add(np.power(xx,2), np.power(yy,2)),0.5)
-line1 = ax.quiver(x,y,xx,yy,scale_units='xy',pivot='middle')
+line1 = ax.quiver(x,y,xx,yy,angles='xy', scale_units = 'xy', scale=1,pivot='middle')
 line2 = ax.scatter([-4,4],[0,0],color = 'r')
 line3 = ax.scatter([-4,4],[0,0])
 ax.set_aspect(0.5)
-#ax.set_facecolor('black')
+
 def updata(frame):
     a = 8*np.sin(np.pi*(frame+1)/150)
     xx = 8*((x-a)/(((x-a)*(x-a)+y*y)**(1.5))-(x+a)/(((x+a)*(x+a)+y*y)**(1.5)))
@@ -29,7 +35,8 @@ def updata(frame):
             if xx[i][j]**2+yy[i][j]**2>0.0081:
                 xx[i][j]=0.09*xx[i][j]/r[i][j]
                 yy[i][j]=0.09*yy[i][j]/r[i][j]
-
+    xx = scale(xx)
+    yy = scale(yy)
     line1.set_UVC(xx,yy)
     line2.set_offsets([a,0])
     line3.set_offsets([-a,0])
@@ -38,6 +45,6 @@ def updata(frame):
 ani = FuncAnimation(fig,func=updata,frames=300,interval = 50)
 
 #打开下面用于保存gif图 Open the following for saving gifs
-#ani.save("电场图.gif")
+#ani.save("电场图.gif",writer = 'pillow')
 
 plt.show()
