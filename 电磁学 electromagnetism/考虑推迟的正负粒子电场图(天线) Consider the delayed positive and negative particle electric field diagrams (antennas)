@@ -1,0 +1,99 @@
+import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib.animation import FuncAnimation
+
+#放缩函数，为了使图像更加美观
+#The zoom function, in order to make the image more aesthetically pleasing
+def scale(x):
+    return np.where(x>0,np.power(x,0.5),-np.power(-x,0.5))
+
+v_light = 3 #电场传播速度 velocity of electric field propagation
+
+#以下定义空间点阵
+#The following defines the spatial dot matrix
+x_min = -20
+x_max = 20
+y_min = -10
+y_max = 10
+n_x = 32
+n_y = 16
+x = np.linspace(x_min,x_max,n_x)
+y = np.linspace(y_min,y_max,n_y)
+X,Y = np.meshgrid(x,y)
+
+#定义时间 Definition time
+t_min = 0
+t_max = 12*np.pi
+n_t = 160
+t = np.linspace(t_min,t_max,n_t)
+dt = t[1]-t[0]
+
+#创建一个粒子类
+#Create a particle class
+class particle:
+    def __init__(self,t_list,l_x,l_y,e):
+        self.t = t_list
+        self.n_t = self.t[0] - self.t[1]
+        self.l_x = l_x
+        self.l_y = l_y
+        self.e = e
+
+#核心代码，计算推迟效应
+#Core code, calculating delayed effects
+def core_code(i,j,k,x,y,particle_list):
+    n_particle = np.size(particle_list)
+    E_x = 0
+    E_y = 0
+    for m in range(n_particle):
+        for n in range(i+1):
+            i_n = i - n
+            r = ((x[k]-particle_list[m].l_x[i_n])**2 + (y[j]-particle_list[m].l_y[i_n])**2)**0.5
+            l_light = n*dt*v_light            
+            if r <= l_light:
+                E_x = E_x + 0.8 * (x[k] - particle_list[m].l_x[i_n])*particle_list[m].e/r
+                E_y = E_y + 0.8 * (y[j] - particle_list[m].l_y[i_n])*particle_list[m].e/r
+                break
+    E_x = scale(E_x)
+    E_y = scale(E_y)
+    return E_x , E_y
+
+#创建粒子1与粒子2的对象
+#Create objects for Particle 1 and Particle 2
+particle_1 = particle(t,np.zeros(n_t),2*np.sin(t),2)
+particle_2 = particle(t,np.zeros(n_t),2*np.sin(-t),-2)
+particle_list = np.array([particle_1,particle_2])
+n_particle_list = np.size(particle_list)
+
+#以下开始作图
+#Start drawing the image below
+fig = plt.figure(dpi = 170)
+ax = fig.add_subplot()
+
+vector = ax.quiver(X,Y,np.zeros((n_x,n_y)),np.zeros((n_x,n_y)),angles='xy', scale_units = 'xy', scale=1,pivot='middle')
+point_1 = ax.scatter(0,0)
+point_2 = ax.scatter(0,0)
+ax.set_aspect(1)
+
+def updata(updata):
+    E_x_list = np.zeros((n_y,n_x))
+    E_y_list = np.zeros((n_y,n_x))
+    i = updata
+
+    #遍历空间中的所有点，并计算推迟后的电场强度
+    #Traverse all points in the space and compute the delayed electric field strengths
+    for j in range(n_y):
+        for k in range(n_x):
+            E_x_list[j,k],E_y_list[j,k] = core_code(i,j,k,x,y,particle_list)
+
+    #更改图像的代码
+    #Changing the code of an image
+    vector.set_UVC(E_x_list,E_y_list)
+    point_1.set_offsets((particle_list[0].l_x[i],particle_list[0].l_y[i]))
+    point_2.set_offsets((particle_list[1].l_x[i],particle_list[1].l_y[i]))
+
+ani = FuncAnimation(fig,updata,frames = n_t-1,interval = 50)
+
+#打开下面代码来保存gif动态图 Open the following code to save the gif
+#ani.save("tianxiantu.gif",writer = 'pillow')    
+
+plt.show()
