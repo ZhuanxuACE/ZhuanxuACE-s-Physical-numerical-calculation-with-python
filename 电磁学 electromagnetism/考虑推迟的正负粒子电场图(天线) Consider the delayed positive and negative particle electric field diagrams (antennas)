@@ -70,8 +70,10 @@ fig = plt.figure(dpi = 170)
 ax = fig.add_subplot()
 
 vector = ax.quiver(X,Y,np.zeros((n_x,n_y)),np.zeros((n_x,n_y)),angles='xy', scale_units = 'xy', scale=1,pivot='middle')
-point_1 = ax.scatter(0,0)
-point_2 = ax.scatter(0,0)
+point_list = np.array([])
+for i in range(n_particle_list):
+    point = ax.scatter(0,0)
+    point_list = np.append(point_list,point)
 ax.set_aspect(1)
 
 def updata(updata):
@@ -88,8 +90,8 @@ def updata(updata):
     #更改图像的代码
     #Changing the code of an image
     vector.set_UVC(E_x_list,E_y_list)
-    point_1.set_offsets((particle_list[0].l_x[i],particle_list[0].l_y[i]))
-    point_2.set_offsets((particle_list[1].l_x[i],particle_list[1].l_y[i]))
+    for k in range(n_particle_list):
+        point_list[k].set_offsets((particle_list[k].l_x[i],particle_list[k].l_y[i]))
 
 ani = FuncAnimation(fig,updata,frames = n_t-1,interval = 50)
 
