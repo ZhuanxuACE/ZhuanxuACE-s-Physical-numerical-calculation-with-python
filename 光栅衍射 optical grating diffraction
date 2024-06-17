@@ -1,0 +1,44 @@
+#利用菲涅尔-惠更斯原理制作
+#Produced using the Fresnel-Huygens principle
+import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib.animation import FuncAnimation
+
+x = np.linspace(-10,10,300)
+y = np.linspace(-10,10,300)
+Lambda = 0.8#波长 wave length
+k = 2*np.pi/Lambda#波矢wave vector
+x,y = np.meshgrid(x,y)
+z = np.sin(k*(x**2 + y**2)**0.5)
+t = 10
+A = np.sin(t)
+z = 0
+length_gap = 6#光栅长度
+n = 30#光栅缝隙
+c = n/length_gap
+
+for i in range(n):#用于确定colorbar的范围
+    z = np.sin(k*(x**2 + (y-i/c)**2)**0.5 - t) + z
+    
+fig = plt.figure(figsize=(16, 9),dpi = 80)
+ax = fig.add_subplot(1,1,1)
+pig = ax.imshow(z,cmap = 'gray')
+fig.colorbar(pig)
+
+def update(frames):    
+    t = frames*np.pi/50
+    z = np.zeros((300,300))
+    
+    n = 300#产生波数 Number of waves generated
+    for i in range(n):
+        z = np.sin(k*((x+10)**2 + (y + length_gap-12 * i/n)**2)**0.5 - t) + z
+    z[4*15:16*15,0:5] = -25
+
+    a = pig.set_data(z)
+    return a
+
+ani = FuncAnimation(fig,update,frames = 100,interval=40)
+
+#打开下面代码以保存gif图 Clock the code below to save the gif
+#ani.save("光栅衍射 optical grating diffraction.gif", writer="pillow")
+plt.show()
